@@ -2,14 +2,14 @@
 
 namespace Wcurl;
 
-class WcurlException extends Exception { }
+class WcurlException extends \Exception { }
 
 class Wcurl {
 
-	function wcurl($method, $url, $query='', $payload='', $request_headers=array(), &$response_headers=array(), $curl_opts=array())
+	public function wcurl($method, $url, $query='', $payload='', $request_headers=array(), &$response_headers=array(), $curl_opts=array())
 	{
-		$ch = curl_init(wcurl_request_uri($url, $query));
-		wcurl_setopts($ch, $method, $payload, $request_headers, $curl_opts);
+		$ch = curl_init(self::wcurl_request_uri($url, $query));
+		self::wcurl_setopts($ch, $method, $payload, $request_headers, $curl_opts);
 		$response = curl_exec($ch);
 		$curl_info = curl_getinfo($ch);
 		$errno = curl_errno($ch);
@@ -22,20 +22,20 @@ class Wcurl {
 		$msg_header = substr($response, 0, $header_size);
 		$msg_body = substr($response, $header_size);
 
-		$response_headers = wcurl_response_headers($msg_header);
+		$response_headers = self::wcurl_response_headers($msg_header);
 
 		return $msg_body;
 	}
 
-		function wcurl_request_uri($url, $query)
-		{
+	private function wcurl_request_uri($url, $query)
+	{
 			if (empty($query)) return $url;
 			if (is_array($query)) return "$url?".http_build_query($query);
 			else return "$url?$query";
-		}
+	}
 
-		function wcurl_setopts($ch, $method, $payload, $request_headers, $curl_opts)
-		{
+	private function wcurl_setopts($ch, $method, $payload, $request_headers, $curl_opts)
+	{
 			$default_curl_opts = array
 			(
 				CURLOPT_HEADER => true,
@@ -77,10 +77,10 @@ class Wcurl {
 
 			$overriden_opts = $curl_opts + $default_curl_opts;
 			foreach ($overriden_opts as $curl_opt=>$value) curl_setopt($ch, $curl_opt, $value);
-		}
+	}
 
-		function wcurl_response_headers($msg_header)
-		{
+	private function wcurl_response_headers($msg_header)
+	{
 
 			$multiple_headers = preg_split("/\r\n\r\n|\n\n|\r\r/", trim($msg_header));
 			$last_response_header_lines = array_pop($multiple_headers);
@@ -95,6 +95,6 @@ class Wcurl {
 			}
 
 			return $response_headers;
-		}
+	}
 }
 ?>
