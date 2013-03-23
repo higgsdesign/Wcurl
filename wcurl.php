@@ -1,7 +1,10 @@
 <?php
 
+namespace Wcurl;
 
-	class WcurlException extends Exception { }
+class WcurlException extends Exception { }
+
+class Wcurl {
 
 	function wcurl($method, $url, $query='', $payload='', $request_headers=array(), &$response_headers=array(), $curl_opts=array())
 	{
@@ -93,5 +96,5 @@
 
 			return $response_headers;
 		}
-
+}
 ?>
